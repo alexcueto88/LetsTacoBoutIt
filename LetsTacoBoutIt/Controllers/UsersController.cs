@@ -46,7 +46,7 @@ namespace LetsTacoBoutIt.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateUser(Users user)
         {
-            _usersRepository.Update(user);
+            _usersRepository.UpdateUser(user);
             return Created("/api/user/" + user.id, user);
         }
 
