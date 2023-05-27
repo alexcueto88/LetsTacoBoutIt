@@ -7,13 +7,11 @@ using LetsTacoBoutIt.Utils;
 
 namespace LetsTacoBoutIt.Repositories
 {
-    public class UsersRepository : IUsersRepository
+    public class UsersRepository : BaseRepository, IUsersRepository
     {
         private readonly string _connectionString;
-        public UsersRepository(IConfiguration configuration)
-        {
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
-        }
+        public UsersRepository(IConfiguration configuration): base(configuration) { }
+
         private SqlConnection Connection
         {
             get { return new SqlConnection(_connectionString); }
@@ -26,10 +24,10 @@ namespace LetsTacoBoutIt.Repositories
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT [id],[FirstName]
+                    cmd.CommandText = @"  SELECT [id],
+                                                 [FirstName]
                                                 ,[LastName]
                                                 ,[Email]
-                                                ,[Password]
                                                 ,[IsAdmin]
                                                 ,[FirebaseId]
                                                 ,[LoginType]
@@ -45,7 +43,6 @@ namespace LetsTacoBoutIt.Repositories
                             FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                             LastName = reader.GetString(reader.GetOrdinal("LastName")),
                             Email = reader.GetString(reader.GetOrdinal("Email")),
-                            Password = reader.GetString(reader.GetOrdinal("Password")),
                             IsAdmin = reader.GetBoolean(reader.GetOrdinal("IsAdmin")),
                             FirebaseId = reader.GetString(reader.GetOrdinal("FirebaseId")),
                             LoginType = reader.GetString(reader.GetOrdinal("LoginType")),
@@ -79,7 +76,6 @@ namespace LetsTacoBoutIt.Repositories
                                               ,[FirstName]
                                               ,[LastName]
                                               ,[Email]
-                                              ,[Password]
                                               ,[IsAdmin]
                                               ,[FirebaseId]
                                               ,[LoginType]
@@ -97,7 +93,6 @@ namespace LetsTacoBoutIt.Repositories
                             FirstName = DbUtils.GetString(reader, "FirstName"),
                             LastName = DbUtils.GetString(reader, "LastName"),
                             Email = DbUtils.GetString(reader, "Email"),
-                            Password = DbUtils.GetString(reader, "Password"),
                             IsAdmin = reader.GetBoolean(reader.GetOrdinal("IsAdmin")),
                             FirebaseId = DbUtils.GetString(reader, "FirebaseId"),
                             LoginType = DbUtils.GetString(reader, "LoginType"),
@@ -122,17 +117,15 @@ namespace LetsTacoBoutIt.Repositories
                                               ([FirstName]
                                               ,[LastName]
                                               ,[Email]
-                                              ,[Password]
                                               ,[IsAdmin])
                                               ,[FirebaseId]
                                               ,[LoginType])
                                           OUTPUT INSERTED.Id
-                                          VALUES (@Name, @LastName, @Email, @Password, @IsAdmin)";
+                                          VALUES (@FirstName, @LastName, @Email, @Password, @IsAdmin)";
 
                     cmd.Parameters.AddWithValue("@FirstName", user.FirstName);
                     cmd.Parameters.AddWithValue("@LastName", user.LastName);
                     cmd.Parameters.AddWithValue("@Email", user.Email);
-                    cmd.Parameters.AddWithValue("@Password", user.Password);
                     cmd.Parameters.AddWithValue("@IsAdmin", user.IsAdmin);
                     cmd.Parameters.AddWithValue("@FirebaseId", user.FirebaseId);
                     cmd.Parameters.AddWithValue("@LoginType", user.LoginType);
@@ -153,17 +146,15 @@ namespace LetsTacoBoutIt.Repositories
                                         SET    [FirstName] = @FirstName
                                               ,[LastName] = @LastName
                                               ,[Email] = @
-                                              ,[Password] = @Password
                                               ,[IsAdmin] = @IsAdmin
                                               ,[FirebaseId] = @FirebaseId
                                               ,[LoginType] = @LoginType
                                         WHERE id = @id;";
 
                     DbUtils.AddParameter(cmd, "@id", user.id);
-                    DbUtils.AddParameter(cmd, "@Name", user.FirstName);
+                    DbUtils.AddParameter(cmd, "@FirstName", user.FirstName);
                     DbUtils.AddParameter(cmd, "@LastName", user.LastName);
                     DbUtils.AddParameter(cmd, "@Email", user.Email);
-                    DbUtils.AddParameter(cmd, "@Password", user.Password);
                     DbUtils.AddParameter(cmd, "@IsAdmin", user.IsAdmin);
                     DbUtils.AddParameter(cmd, "@FirebaseId", user.FirebaseId);
                     DbUtils.AddParameter(cmd, "@LoginType", user.LoginType);
@@ -187,10 +178,6 @@ namespace LetsTacoBoutIt.Repositories
             }
         }
 
-        public void Update(Users user)
-        {
-            throw new NotImplementedException();
-        }
     }
 
 }

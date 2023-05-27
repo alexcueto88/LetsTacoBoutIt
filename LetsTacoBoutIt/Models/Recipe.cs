@@ -28,7 +28,7 @@ namespace LetsTacoBoutIt.Models
 
         public string Ingredients { get; set; }
 
-        public string Description { get; set; }
+        public string Directions { get; set; }
 
 
         [DisplayName("Recipe Image")]
