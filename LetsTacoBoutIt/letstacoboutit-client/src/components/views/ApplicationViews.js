@@ -1,6 +1,9 @@
-import { useNavigate } from "react-router-dom";
+import { Routes, Route, Outlet, useNavigate } from "react-router-dom";
 import { logout } from "../helpers/logout";
 import { PhotoUpload } from "../photoStorage/PhotoUpload";
+import { Home } from "./HomePage/Home";
+import { Locations } from "./Locations/Locations";
+
 
 export const ApplicationViews = () => {
   let navigate = useNavigate();
@@ -9,16 +12,34 @@ export const ApplicationViews = () => {
   const onLogout = () => {
     logout.logout(navigate);
   };
-
+  
   return (
-    <>
-      <h1>A Blank Page!!</h1>
-      {/* logout button */}
-      <button type="submit" onClick={onLogout}>
-        Logout
-      </button>
-      {/* move this component to where you want your PhotoUpload */}
-      <PhotoUpload />
-    </>
+    
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <>
+            <Outlet />
+          </>
+        }
+      >
+        <Route path="Home" element={<Home />} /> 
+        <Route path="Locations" element={<Locations />} /> 
+
+
+      </Route>
+    </Routes>
+
+
+    // <>
+    //   <h1>A Blank Page!!</h1>
+    //   {/* logout button */}
+    //   <button type="submit" onClick={onLogout}>
+    //     Logout
+    //   </button>
+    //   {/* move this component to where you want your PhotoUpload */}
+    //   <PhotoUpload />
+    // </>
   );
 };
