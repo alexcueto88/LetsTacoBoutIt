@@ -28,6 +28,7 @@ import {
                 email: userCredential.user.email,
                 displayName: userObj.fullName,
                 uid: userCredential.user.uid,
+                isAdmin: userObj.isAdmin,
                 type: "email",
               };
               // Saves the user to localstorage
@@ -57,13 +58,30 @@ import {
             const userAuth = {
               email: userCredential.user.email,
               displayName: userCredential.user.displayName,
-              uid: userCredential.user.uid,
+              firebaseId: userCredential.user.uid,
               type: "email",
+              isAdmin: userCredential.user.isAdmin,
             };
             // Saves the user to localstorage
-            localStorage.setItem("capstone_user", JSON.stringify(userAuth));
-            // Navigate us back to home
-            navigate("/");
+            // localStorage.setItem("capstone_user", JSON.stringify(userAuth));
+            // // Navigate us back to home
+            // navigate("/");
+
+            fetch(`https://localhost:7278/api/User/firebaseId/${userAuth.firebaseId}`)
+            .then((response) => {
+              response.json().then((json) => {
+                userAuth.id = json.id
+                userAuth.firstName = json.firstName
+                userAuth.lastName = json.lastName
+                userAuth.email = json.email
+                userAuth.isAdmin = json.isAdmin
+                userAuth.loginType = json.loginType
+                localStorage.setItem("capstone_user", JSON.stringify(userAuth));
+                navigate("/")
+              })
+            });
+
+
           })
           .catch((error) => {
             console.log("Email SignIn Error");
@@ -80,7 +98,7 @@ import {
           // Remove the user from localstorage
           localStorage.removeItem("capstone_user");
           // Navigate us back to home
-          navigate("/");
+          navigate("/login");
           console.log("Sign Out Success!");
         })
         .catch((error) => {

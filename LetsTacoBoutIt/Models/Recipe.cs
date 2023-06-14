@@ -34,9 +34,5 @@ namespace LetsTacoBoutIt.Models
         [DisplayName("Recipe Image")]
         public string RecipeImage { get; set; }
 
-
-        [DisplayName("Created By")]
-        public string CreatedBy { get; set; }
-
     }
 }

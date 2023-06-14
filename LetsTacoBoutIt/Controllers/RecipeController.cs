@@ -19,7 +19,7 @@ namespace LetsTacoBoutIt.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(_recipeRepository.GetAll());
+            return Ok(_recipeRepository.GetAllRecipes());
         }
 
         ///************
@@ -38,13 +38,13 @@ namespace LetsTacoBoutIt.Controllers
         [HttpPost]
         public IActionResult AddRecipe(Recipe recipe)
         {
-            _recipeRepository.Insert(recipe);
+            _recipeRepository.AddRecipe(recipe);
             return Created("/api/recipe/" + recipe.id, recipe);
         }
 
         // PUT api/<UserController>/5
         [HttpPut("{id}")]
-        public IActionResult UpdateRecipe(Recipe recipe)
+        public IActionResult Update(Recipe recipe)
         {
             _recipeRepository.Update(recipe);
             return Created("/api/recipe/" + recipe.id, recipe);

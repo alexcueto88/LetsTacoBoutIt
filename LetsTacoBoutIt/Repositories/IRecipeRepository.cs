@@ -4,11 +4,10 @@ namespace LetsTacoBoutIt.Repositories
 {
     public interface IRecipeRepository
     {
+        void AddRecipe(Recipe recipe);
         void Delete(int id);
-        List<Recipe> GetAll();
+        List<Recipe> GetAllRecipes();
         Recipe GetById(int id);
-        void Insert(Recipe recipe);
         void Update(Recipe recipe);
-        void UpdateRecipe(Recipe recipe);
     }
 }

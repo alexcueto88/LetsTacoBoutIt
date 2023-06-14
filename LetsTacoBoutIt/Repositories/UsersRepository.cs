@@ -9,13 +9,7 @@ namespace LetsTacoBoutIt.Repositories
 {
     public class UsersRepository : BaseRepository, IUsersRepository
     {
-        private readonly string _connectionString;
         public UsersRepository(IConfiguration configuration): base(configuration) { }
-
-        private SqlConnection Connection
-        {
-            get { return new SqlConnection(_connectionString); }
-        }
 
         public List<Users> GetAll()
         {
@@ -65,6 +59,46 @@ namespace LetsTacoBoutIt.Repositories
         }
 
 
+        public Users GetUserByFirebaseId(string firebaseId)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT [id]
+                                              ,[FirstName]
+                                              ,[LastName]
+                                              ,[Email]
+                                              ,[IsAdmin]
+                                              ,[FirebaseId]
+                                              ,[LoginType]
+                                          FROM [LetsTacoBoutIt].[dbo].[Users]
+                                          WHERE [FirebaseId] = @FirebaseId";
+
+                    cmd.Parameters.AddWithValue("@FirebaseId", firebaseId);
+                    var reader = cmd.ExecuteReader();
+                    Users user = null; 
+                    while (reader.Read())
+                    {
+                        user = new Users()
+                        {
+                            id = DbUtils.GetInt(reader, "id"),
+                            FirstName = DbUtils.GetString(reader, "FirstName"),
+                            LastName = DbUtils.GetString(reader, "LastName"),
+                            Email = DbUtils.GetString(reader, "Email"),
+                            IsAdmin = reader.GetBoolean(reader.GetOrdinal("IsAdmin")),
+                            FirebaseId = DbUtils.GetString(reader, "FirebaseId"),
+                            LoginType = DbUtils.GetString(reader, "LoginType"),
+                        };
+                    };
+                    conn.Close();
+                    return user;
+
+                }
+            }
+        }
+
         public Users GetUserById(int id)
         {
             using (var conn = Connection)
@@ -104,6 +138,9 @@ namespace LetsTacoBoutIt.Repositories
                 }
             }
         }
+
+
+
 
 
         public void Insert(Users user)

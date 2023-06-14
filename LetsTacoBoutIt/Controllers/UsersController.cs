@@ -34,6 +34,19 @@ namespace LetsTacoBoutIt.Controllers
             return Ok(user);
         }
 
+        // GET api/<UserController>/5
+        [HttpGet("firebaseId/{firebaseId}")]
+        public IActionResult GetUserByFirebaseId(string firebaseId)
+        {
+            var user = _usersRepository.GetUserByFirebaseId(firebaseId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
+        }
+
+
         // POST api/<UserController>
         [HttpPost]
         public IActionResult AddUser(Users user)

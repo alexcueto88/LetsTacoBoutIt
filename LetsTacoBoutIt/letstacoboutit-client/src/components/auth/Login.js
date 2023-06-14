@@ -5,12 +5,15 @@ import { emailAuth } from "../helpers/emailAuth";
 import { googleAuth } from "../helpers/googleAuth";
 import "./Login.css";
 
+
 export const Login = () => {
   const [login, setLogin] = useState({
     email: "",
     password: "",
   });
   const navigate = useNavigate();
+
+
 
   const updateLogin = (evt) => {
     const copy = { ...login };

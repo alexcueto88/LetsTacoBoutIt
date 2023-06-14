@@ -1,0 +1,80 @@
+.background{
+    border: 5px solid black;
+
+}
+
+.page-header{
+    border: 3px dotted rgb(17, 0, 255);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.section-header{
+    border: 3px dotted orange;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.proteintype-box{
+    border: 5px solid rebeccapurple
+
+   
+}
+
+.CategoryBox{
+    /* border: 5px solid red; */
+    font-size: x-large;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: space-evenly;
+    justify-content: space-evenly;
+}
+
+
+.recipe-list {
+    border: 5px solid red;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.recipe-card{
+    border: 5px solid blue;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+}
+
+.recipe-name{
+    border: 5px solid green;
+}
+
+.recipe-name-link{
+    border: 5px solid rgb(49, 49, 49);
+    display: flex;
+
+}
+
+img, svg {
+    vertical-align: middle;
+    width: 400px;
+}
+
+.type-Box{
+    border: 1px solid black;
+    background-color: rgb(56, 37, 230);
+    border-collapse: separate;
+    color:white;
+    display: flex;
+    flex-wrap: wrap;
+    height: 300px;
+    width: 800px;
+    align-items: center;
+    justify-content: center;
+
+}

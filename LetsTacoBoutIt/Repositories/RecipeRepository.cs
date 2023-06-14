@@ -21,7 +21,7 @@ namespace LetsTacoBoutIt.Repositories
             get { return new SqlConnection(_connectionString); }
         }
 
-        public List<Recipe> GetAll()
+        public List<Recipe> GetAllRecipes()
         {
             using (var conn = Connection)
             {
@@ -40,7 +40,6 @@ namespace LetsTacoBoutIt.Repositories
                                               ,[Ingredients]
                                               ,[Directions]
                                               ,[RecipeImage]
-                                              ,[CreatedBy]
                                           FROM [LetsTacoBoutIt].[dbo].[Recipe]";
 
                     var reader = cmd.ExecuteReader();
@@ -49,20 +48,19 @@ namespace LetsTacoBoutIt.Repositories
                     {
                         var recipe = new Recipe()
                         {
-                            id = reader.GetInt32(reader.GetOrdinal("id")),
-                            UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
-                            ProteinTypeId = reader.GetInt32(reader.GetOrdinal("ProteinTypeId")),
-                            RecipeName = reader.GetString(reader.GetOrdinal("RecipeName")),
-                            Level = reader.GetString(reader.GetOrdinal("Level")),
-                            PrepTime = reader.GetInt32(reader.GetOrdinal("PrepTime")),
-                            CookTime = reader.GetInt32(reader.GetOrdinal("CookTime")),
-                            TotalTime = reader.GetInt32(reader.GetOrdinal("TotalTime")),
-                            ServingSize = reader.GetInt32(reader.GetOrdinal("ServingSize")),
-                            Ingredients = reader.GetString(reader.GetOrdinal("Ingredients")),
-                            Directions = reader.GetString(reader.GetOrdinal("Directions")),
-                            RecipeImage = reader.GetString(reader.GetOrdinal("RecipeImage")),
-                            CreatedBy = reader.GetString(reader.GetOrdinal("CreatedBy")),
-                        };
+                            id = reader.IsDBNull(reader.GetOrdinal("id")) ? 0 : reader.GetInt32(reader.GetOrdinal("id")),
+                            UserId = reader.IsDBNull(reader.GetOrdinal("UserId")) ? 0 : reader.GetInt32(reader.GetOrdinal("UserId")),
+                            ProteinTypeId = reader.IsDBNull(reader.GetOrdinal("ProteinTypeId")) ? 0 : reader.GetInt32(reader.GetOrdinal("ProteinTypeId")),
+                            RecipeName = reader.IsDBNull(reader.GetOrdinal("RecipeName")) ? string.Empty : reader.GetString(reader.GetOrdinal("RecipeName")),
+                            Level = reader.IsDBNull(reader.GetOrdinal("Level")) ? string.Empty : reader.GetString(reader.GetOrdinal("Level")),
+                            PrepTime = reader.IsDBNull(reader.GetOrdinal("PrepTime")) ? 0 : reader.GetInt32(reader.GetOrdinal("PrepTime")),
+                            CookTime = reader.IsDBNull(reader.GetOrdinal("CookTime")) ? 0 : reader.GetInt32(reader.GetOrdinal("CookTime")),
+                            TotalTime = reader.IsDBNull(reader.GetOrdinal("TotalTime")) ? 0 : reader.GetInt32(reader.GetOrdinal("TotalTime")),
+                            ServingSize = reader.IsDBNull(reader.GetOrdinal("ServingSize")) ? 0 : reader.GetInt32(reader.GetOrdinal("ServingSize")),
+                            Ingredients = reader.IsDBNull(reader.GetOrdinal("Ingredients")) ? string.Empty : reader.GetString(reader.GetOrdinal("Ingredients")),
+                            Directions = reader.IsDBNull(reader.GetOrdinal("Directions")) ? string.Empty : reader.GetString(reader.GetOrdinal("Directions")),
+                            RecipeImage = reader.IsDBNull(reader.GetOrdinal("RecipeImage")) ? string.Empty : reader.GetString(reader.GetOrdinal("RecipeImage"))
+                           };
 
                         recipes.Add(recipe);
 
@@ -76,7 +74,7 @@ namespace LetsTacoBoutIt.Repositories
             }
         }
 
-       
+
         public Recipe GetById(int id)
         {
             using (var conn = Connection)
@@ -85,31 +83,32 @@ namespace LetsTacoBoutIt.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"SELECT [id]
-                                              ,[UserId]
-                                              ,[ProteinTypeId]
-                                              ,[RecipeName]
-                                              ,[Level]
-                                              ,[PrepTime]
-                                              ,[CookTime]
-                                              ,[TotalTime]
-                                              ,[ServingSize]
-                                              ,[Ingredients]
-                                              ,[Directions]
-                                              ,[RecipeImage]
-                                              ,[CreatedBy]
-                                          FROM [LetsTacoBoutIt].[dbo].[Recipe]""
-                                          WHERE id = @id";
+                                      ,[UserId]
+                                      ,[ProteinTypeId]
+                                      ,[RecipeName]
+                                      ,[Level]
+                                      ,[PrepTime]
+                                      ,[CookTime]
+                                      ,[TotalTime]
+                                      ,[ServingSize]
+                                      ,[Ingredients]
+                                      ,[Directions]
+                                      ,[RecipeImage]
+                                  FROM [LetsTacoBoutIt].[dbo].[Recipe]
+                                  WHERE id = @id";
 
-                    cmd.Parameters.AddWithValue("id", id);
+                    cmd.Parameters.AddWithValue("@id", id);
+
                     var reader = cmd.ExecuteReader();
-                    Recipe recipe = null; 
-                    while (reader.Read())
+                    Recipe recipe = null;
+
+                    if (reader.Read())
                     {
                         recipe = new Recipe()
                         {
                             id = DbUtils.GetInt(reader, "id"),
                             UserId = DbUtils.GetInt(reader, "UserId"),
-                            ProteinTypeId = DbUtils.GetInt(reader, "ProteinType"),
+                            ProteinTypeId = DbUtils.GetInt(reader, "ProteinTypeId"),
                             RecipeName = DbUtils.GetString(reader, "RecipeName"),
                             Level = DbUtils.GetString(reader, "Level"),
                             PrepTime = DbUtils.GetInt(reader, "PrepTime"),
@@ -119,39 +118,40 @@ namespace LetsTacoBoutIt.Repositories
                             Ingredients = DbUtils.GetString(reader, "Ingredients"),
                             Directions = DbUtils.GetString(reader, "Directions"),
                             RecipeImage = DbUtils.GetString(reader, "RecipeImage"),
-                            CreatedBy = DbUtils.GetString(reader, "CreatedBy"),
                         };
-                    };
-                    conn.Close();
-                    return recipe;
+                    }
 
+                    reader.Close();
+                    conn.Close();
+
+                    return recipe;
                 }
             }
         }
 
 
-        public void Insert(Recipe recipe)
+
+        public void AddRecipe(Recipe recipe)
         {
             using (var conn = Connection)
             {
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"INSERT INTO [Recipe]
-                                              ([UserId]
-                                              ,[ProteinTypeId]
-                                              ,[RecipeName]
-                                              ,[Level]
-                                              ,[PrepTime]
-                                              ,[CookTime]
-                                              ,[TotalTime]
-                                              ,[ServingSize]
-                                              ,[Ingredients]
-                                              ,[Directions]
-                                              ,[RecipeImage]
-                                              ,[CreatedBy])
+                    cmd.CommandText = @"INSERT INTO [LetsTacoBoutIt].[dbo].[Recipe]
+                                          ([UserId]
+                                          ,[ProteinTypeId]
+                                          ,[RecipeName]
+                                          ,[Level]
+                                          ,[PrepTime]
+                                          ,[CookTime]
+                                          ,[TotalTime]
+                                          ,[ServingSize]
+                                          ,[Ingredients]
+                                          ,[Directions]
+                                          ,[RecipeImage])   
                                         OUTPUT INSERTED.Id
-                                        VALUES (@UserId, @ProteinTypeId, @RecipeName, @Level, @PrepTime, @CookTime, @TotalTime, @ServingSize, @Ingredients, @Directions, @RecipeImage, @CreatedBy)";
+                                        VALUES (@UserId, @ProteinTypeId, @RecipeName, @Level, @PrepTime, @CookTime, @TotalTime, @ServingSize, @Ingredients, @Directions, @RecipeImage)";
 
                     cmd.Parameters.AddWithValue("@UserId", recipe.UserId);
                     cmd.Parameters.AddWithValue("@ProteinTypeId", recipe.ProteinTypeId);
@@ -164,15 +164,13 @@ namespace LetsTacoBoutIt.Repositories
                     cmd.Parameters.AddWithValue("@Ingredients", recipe.Ingredients);
                     cmd.Parameters.AddWithValue("@Directions", recipe.Directions);
                     cmd.Parameters.AddWithValue("@RecipeImage", recipe.RecipeImage);
-                    cmd.Parameters.AddWithValue("@CreatedBY", recipe.CreatedBy);
-
 
                     recipe.id = (int)cmd.ExecuteScalar();
                 }
             }
         }
 
-        public void UpdateRecipe(Recipe recipe)
+        public void Update(Recipe recipe)
         {
             using (var conn = Connection)
             {
@@ -191,7 +189,6 @@ namespace LetsTacoBoutIt.Repositories
                                               ,[Ingredients] = @Ingredients
                                               ,[Directions] = @Directions
                                               ,[RecipeImage] = @RecipeImage
-                                              ,[CreatedBy]) = @CreatedBy
                                         WHERE id = @id;";
 
                     DbUtils.AddParameter(cmd, "@UserId", recipe.UserId);
@@ -205,7 +202,7 @@ namespace LetsTacoBoutIt.Repositories
                     DbUtils.AddParameter(cmd, "@Ingredients", recipe.Ingredients);
                     DbUtils.AddParameter(cmd, "@Directions", recipe.Directions);
                     DbUtils.AddParameter(cmd, "@RecipeImage", recipe.RecipeImage);
-                    DbUtils.AddParameter(cmd, "@CreatedBy", recipe.CreatedBy);
+                    DbUtils.AddParameter(cmd, "@id", recipe.id);
 
                     cmd.ExecuteNonQuery();
                 }
@@ -225,17 +222,6 @@ namespace LetsTacoBoutIt.Repositories
                 }
             }
         }
-
-        public void Update(Recipe recipe)
-        {
-            throw new NotImplementedException();
-        }
-
-
-
-
-
-
 
 
 
